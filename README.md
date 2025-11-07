@@ -1,10 +1,17 @@
-🚀 Booking System API (Integrated Reservation System)
-This repository contains the Pure Backend API for a comprehensive reservation and scheduling system (e.g., booking halls, clinics, or services). It is built using Laravel and leverages Laravel Sanctum for API authentication.🌟 Key FeaturesAPI Authentication (Sanctum): Secure registration, login, and token-based authentication for both Admin and Customer roles.Role-Based Authorization: Clear separation of privileges using admin and customer Middleware.Resource Management (CRUD): Full management of bookable items (halls, services).Availability Scheduling: Define weekly working hours and specific date exceptions for each resource.Complex Scheduling Logic: Calculates truly available time slots by factoring in defined availability and existing booking overlaps (Conflict Check).Asynchronous Notifications (Queue/Events): Sends booking confirmations, cancellations, and reminders via email asynchronously to maintain fast API response times.Scheduled Jobs (Laravel Scheduler): Automatically sends booking reminders 24 hours prior to the appointment time.🛠️ Setup and InstallationFollow these steps to get the project running on your local machine.1. PrerequisitesPHP >= 8.2ComposerMySQL DatabaseGit2. Clone the RepositoryBashgit clone <YOUR_REPOSITORY_URL_HERE>
-cd BookingSystemAPI
-3. Install DependenciesBashcomposer install
-4. Environment Configuration (.env)Create a copy of the .env.example file and name it .env:Bashcp .env.example .env
-Edit the database and mailer configurations in .env:VariableValue (Example)DescriptionDB_DATABASEbooking_api_dbYour database name.DB_USERNAMErootDatabase username.DB_PASSWORDsecretDatabase password.MAIL_MAILERsmtp / logUse log for local testing; smtp for production mail sending.Generate Application Key:Bashphp artisan key:generate
-5. Run MigrationsExecute the migrations to create the necessary database tables:Bashphp artisan migrate
-6. Run Server and Queue WorkerStart the local server for the API:Bashphp artisan serve
-You must run the Queue Worker separately to process emails (confirmations, cancellations, and reminders):Bashphp artisan queue:work
-🔑 API Endpoints and AuthenticationAll endpoints are prefixed with /api/. Requests to protected routes must include the Sanctum Token in the header.Header KeyHeader Value (Example)Authorization`Bearer 11. Authentication RoutesMethodEndpointDescriptionPOST/api/registerRegister a new user (customer by default).POST/api/loginLog in and receive a new Sanctum Token.POST/api/logoutLog out and revoke the current Token.2. Admin Management Routes (Requires admin Role)ResourceMethodEndpointDescriptionResourcesPOST/api/resourcesCreate a new bookable resource.AvailabilitiesPOST/api/availabilitiesDefine working hours (day_of_week, start_time, end_time).3. Booking and Scheduling Logic (Authenticated Users)MethodEndpointDescriptionGET/api/available-slotsCrucial: Calculates and returns available slots for a given resource, date range, and duration.POST/api/bookingsCreate New Booking. Performs availability and conflict checks before saving.GET/api/bookingsRetrieve all bookings for the authenticated user.PATCH/api/bookings/{id}Update booking status (primarily used to set status to "cancelled").⏰ Scheduler ConfigurationTo ensure reminders are sent automatically (using the bookings:send-reminders command), the Laravel Scheduler must be configured on the server.Cron Job Setup (Production)Set up a single Cron Job on your server to run the Laravel Scheduler every minute:Bash* * * * * cd /path/to/your/project && php artisan schedule:run >> /dev/null 2>&1
+#🚀 Booking System API (Integrated Reservation System)
+This repository contains the Pure Backend API for a comprehensive reservation and scheduling system (e.g., booking halls, clinics, or services). It is built using Laravel and leverages Laravel Sanctum for API authentication.
+
+🌟 Key Features
+API Authentication (Sanctum): Secure registration, login, and token-based authentication for both Admin and Customer roles.
+
+Role-Based Authorization: Clear separation of privileges using admin and customer Middleware.
+
+Resource Management (CRUD): Full management of bookable items (halls, services).
+
+Availability Scheduling: Define weekly working hours and specific date exceptions for each resource.
+
+Complex Scheduling Logic: Calculates truly available time slots by factoring in defined availability and existing booking overlaps (Conflict Check).
+
+Asynchronous Notifications (Queue/Events): Sends booking confirmations, cancellations, and reminders via email asynchronously to maintain fast API response times.
+
+Scheduled Jobs (Laravel Scheduler): Automatically sends booking reminders 24 hours prior to the appointment time.
