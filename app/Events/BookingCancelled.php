@@ -14,14 +14,13 @@ class BookingCancelled
     /**
      * @var Booking
      */
-    public $booking;
-
+    public Booking $booking;
     /**
      * إنشاء نسخة جديدة من الحدث.
      */
     public function __construct(Booking $booking)
     {
         // نحمل كائن الحجز ليكون متاحاً في المستمعين
-        $this->booking = $booking->load('resource'); 
+        $this->booking = $booking->load('user', 'resource');
     }
 }

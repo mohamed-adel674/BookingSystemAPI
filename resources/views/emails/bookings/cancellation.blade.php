@@ -1,26 +1,18 @@
 @component('mail::message')
+# Booking Cancelled
 
-# تم الغاء الحجز
+Hello {{ $booking->user->name }},
 
-We regret to inform you that your booking has been successfully **cancelled**.
+We confirm that your booking for **{{ $booking->resource->name }}** has been **successfully cancelled**.
 
-### Cancelled Booking Details:
+| Detail | Value |
+| :--- | :--- |
+| **Resource** | {{ $booking->resource->name }} |
+| **Starts At** | {{ $booking->start_time->format('Y-m-d H:i A') }} |
+| **Status** | Cancelled |
 
-* **Booking ID:** \#{{ $booking->id }}
-* **Resource:** {{ $booking->resource->name ?? 'N/A' }}
-* **Start Time:** {{ $booking->start_time }}
-* **End Time:** {{ $booking->end_time }}
-* **Current Status:** **{{ ucfirst($booking->status) }}**
+If this was an error, please contact support immediately.
 
-We understand that plans can change. If you need to make a new booking, please don't hesitate to use our system.
-
-@component('mail::button', ['url' => url('/dashboard/bookings')])
-Manage Bookings
-@endcomponent
-
-Thank you for using our services.
-
-Regards,
-The [Your System Name] Team
-
+Thank you,
+{{ config('app.name') }}
 @endcomponent
