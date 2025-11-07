@@ -1,4 +1,5 @@
 <?php
+// App/Models/User.php
 
 namespace App\Models;
 
@@ -6,11 +7,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens; // <--- (1) إضافة الـ Trait
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable; // <--- (1) تسجيل الـ Trait هنا
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // <--- (2) أضفنا حقل الدور (Role)
+        'email_verified_at', // <--- (2) أضفنا email_verified_at
     ];
 
     /**
@@ -44,5 +48,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    
+    // --- (3) إضافة العلاقات ---
+    
+    /**
+     * Get the bookings associated with the user.
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
     }
 }
