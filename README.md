@@ -1,8 +1,8 @@
-# Booking System API
+# 🚀 Booking System API
 
 A comprehensive Laravel-based booking system API with complete resource management, user authentication, and admin dashboard.
 
-## 🚀 Features
+## 🌟 Features
 
 - **User Authentication** (Register, Login, Refresh Token, Logout)
 - **Profile Management** (View & Update Profile)
@@ -13,20 +13,24 @@ A comprehensive Laravel-based booking system API with complete resource manageme
 - **Admin Dashboard** (Statistics, User Management, Booking Management)
 - **Email Notifications** (Booking Created, Booking Cancelled)
 - **Search & Filtering** (Services, Resources, Bookings)
+- **Role-Based Authorization**: Clear separation of privileges between admin and customer users
+- **Complex Scheduling Logic**: Calculates available time slots with conflict detection
+- **Asynchronous Notifications**: Queue-based email system for fast API responses
+- **Scheduled Jobs**: Automatic reminders 24 hours before appointments
 
 ## 📋 Requirements
 
-- PHP >= 8.1
+- PHP >= 8.2
 - Composer
-- MySQL or SQLite
+- MySQL Database
 - Laravel 11.x
 
 ## 🛠️ Installation
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd BookingSystemAPI-main
+git clone https://github.com/mohamed-adel674/BookingSystemAPI.git
+cd BookingSystemAPI
 
 # Install dependencies
 composer install
@@ -136,7 +140,8 @@ MAIL_FROM_ADDRESS=noreply@booking.com
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
-For development, use **Mailtrap** or **MailHog**.
+For development, use **Mailtrap** or **MailHog**.  
+For production, configure your actual SMTP provider.
 
 ## 🔒 Security Features
 
@@ -216,6 +221,21 @@ app/
     └── SendBookingCancellation.php
 ```
 
+## ⏰ Queue Worker & Scheduler
+
+### Queue Worker
+The Queue Worker must be run separately to process emails and notifications:
+```bash
+php artisan queue:work
+```
+
+### Scheduler Configuration
+To enable daily reminders (the `bookings:send-reminders` command), you must set up a Cron Job on your production server to run the Laravel Scheduler every minute:
+
+```bash
+* * * * * cd /path/to/your/project && php artisan schedule:run >> /dev/null 2>&1
+```
+
 ## 🤝 Contributing
 
 1. Fork the project
@@ -230,8 +250,8 @@ This project is open-sourced software licensed under the MIT license.
 
 ## 👨‍💻 Author
 
-Booking System API - Laravel Backend
+Booking System API - Laravel Backend by Mohamed Adel
 
 ## 📞 Support
 
-For support, email support@booking.com or create an issue in the repository.
+For support, create an issue in the repository.
