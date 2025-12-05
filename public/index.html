@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Booking System API - لوحة التحكم</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .info-item {
+            padding: 12px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-right: 4px solid #667eea;
+            border-radius: 5px;
+        }
+
+        .info-item strong {
+            color: #764ba2;
+            display: inline-block;
+            min-width: 150px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .api-endpoint {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .api-endpoint .method {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .api-endpoint .method.post {
+            background: #48bb78;
+        }
+
+        .api-endpoint .method.put {
+            background: #ed8936;
+        }
+
+        .api-endpoint .method.delete {
+            background: #f56565;
+        }
+
+        .response-box {
+            background: #1a202c;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            display: none;
+        }
+
+        .response-box.active {
+            display: block;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Booking System API</h1>
+            <p>نظام حجز متكامل - لوحة التحكم والاختبار</p>
+            <span class="status-badge">✅ السيرفر يعمل</span>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>3</h3>
+                <p>مستخدمين</p>
+            </div>
+            <div class="stat-card">
+                <h3>3</h3>
+                <p>موارد</p>
+            </div>
+            <div class="stat-card">
+                <h3>2</h3>
+                <p>حجوزات</p>
+            </div>
+            <div class="stat-card">
+                <h3>15</h3>
+                <p>أوقات متاحة</p>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Login Card -->
+            <div class="card">
+                <h2>🔐 تسجيل الدخول</h2>
+                <div class="info-item">
+                    <strong>Admin:</strong> admin@booking.com / password123
+                </div>
+                <div class="info-item">
+                    <strong>Customer:</strong> customer@booking.com / password123
+                </div>
+                
+                <div class="input-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="login-email" value="admin@booking.com" placeholder="email@example.com">
+                </div>
+                <div class="input-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="login-password" value="password123" placeholder="********">
+                </div>
+                <button class="btn" onclick="login()">تسجيل الدخول</button>
+                <div id="login-response" class="response-box"></div>
+            </div>
+
+            <!-- Resources Card -->
+            <div class="card">
+                <h2>📋 الموارد المتاحة</h2>
+                <div class="info-item">
+                    <strong>Conference Hall A</strong><br>
+                    قاعة مؤتمرات كبيرة - 100 شخص
+                </div>
+                <div class="info-item">
+                    <strong>Meeting Room B</strong><br>
+                    غرفة اجتماعات صغيرة - 10 أشخاص
+                </div>
+                <div class="info-item">
+                    <strong>Dental Clinic</strong><br>
+                    عيادة أسنان احترافية
+                </div>
+                <button class="btn" onclick="getResources()">عرض جميع الموارد</button>
+                <div id="resources-response" class="response-box"></div>
+            </div>
+
+            <!-- Bookings Card -->
+            <div class="card">
+                <h2>📅 الحجوزات</h2>
+                <div class="info-item">
+                    يتطلب تسجيل الدخول أولاً
+                </div>
+                <button class="btn" onclick="getBookings()">عرض حجوزاتي</button>
+                <button class="btn" onclick="getAllBookings()">جميع الحجوزات (Admin)</button>
+                <div id="bookings-response" class="response-box"></div>
+            </div>
+
+            <!-- Create Booking Card -->
+            <div class="card">
+                <h2>➕ إنشاء حجز جديد</h2>
+                <div class="input-group">
+                    <label>Resource ID</label>
+                    <input type="number" id="resource-id" value="1" placeholder="1">
+                </div>
+                <div class="input-group">
+                    <label>تاريخ ووقت البداية</label>
+                    <input type="datetime-local" id="start-time">
+                </div>
+                <div class="input-group">
+                    <label>تاريخ ووقت النهاية</label>
+                    <input type="datetime-local" id="end-time">
+                </div>
+                <button class="btn" onclick="createBooking()">إنشاء الحجز</button>
+                <div id="create-booking-response" class="response-box"></div>
+            </div>
+        </div>
+
+        <!-- API Endpoints Documentation -->
+        <div class="card">
+            <h2>📚 API Endpoints</h2>
+            
+            <h3 style="color: #764ba2; margin-top: 20px;">Authentication</h3>
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                /api/register - تسجيل مستخدم جديد
+            </div>
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                /api/login - تسجيل الدخول
+            </div>
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                /api/logout - تسجيل الخروج
+            </div>
+
+            <h3 style="color: #764ba2; margin-top: 20px;">Resources (Admin Only)</h3>
+            <div class="api-endpoint">
+                <span class="method">GET</span>
+                /api/resources - عرض جميع الموارد
+            </div>
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                /api/resources - إنشاء مورد جديد
+            </div>
+            <div class="api-endpoint">
+                <span class="method put">PUT</span>
+                /api/resources/{id} - تحديث مورد
+            </div>
+            <div class="api-endpoint">
+                <span class="method delete">DELETE</span>
+                /api/resources/{id} - حذف مورد
+            </div>
+
+            <h3 style="color: #764ba2; margin-top: 20px;">Bookings</h3>
+            <div class="api-endpoint">
+                <span class="method">GET</span>
+                /api/bookings - عرض حجوزاتي
+            </div>
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                /api/bookings - إنشاء حجز جديد
+            </div>
+            <div class="api-endpoint">
+                <span class="method">GET</span>
+                /api/available-slots - الأوقات المتاحة
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let authToken = null;
+
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const responseBox = document.getElementById('login-response');
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                responseBox.classList.add('active');
+                responseBox.textContent = JSON.stringify(data, null, 2);
+
+                if (data.token) {
+                    authToken = data.token;
+                    alert('✅ تم تسجيل الدخول بنجاح!');
+                }
+            } catch (error) {
+                responseBox.classList.add('active');
+                responseBox.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getResources() {
+            const responseBox = document.getElementById('resources-response');
+
+            try {
+                const response = await fetch('/api/resources', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        ...(authToken && { 'Authorization': `Bearer ${authToken}` })
+                    }
+                });
+
+                const data = await response.json();
+                responseBox.classList.add('active');
+                responseBox.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseBox.classList.add('active');
+                responseBox.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getBookings() {
+            if (!authToken) {
+                alert('⚠️ يجب تسجيل الدخول أولاً!');
+                return;
+            }
+
+            const responseBox = document.getElementById('bookings-response');
+
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                responseBox.classList.add('active');
+                responseBox.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseBox.classList.add('active');
+                responseBox.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getAllBookings() {
+            if (!authToken) {
+                alert('⚠️ يجب تسجيل الدخول كـ Admin أولاً!');
+                return;
+            }
+
+            const responseBox = document.getElementById('bookings-response');
+
+            try {
+                const response = await fetch('/api/bookings?all=1', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                responseBox.classList.add('active');
+                responseBox.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseBox.classList.add('active');
+                responseBox.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function createBooking() {
+            if (!authToken) {
+                alert('⚠️ يجب تسجيل الدخول أولاً!');
+                return;
+            }
+
+            const resourceId = document.getElementById('resource-id').value;
+            const startTime = document.getElementById('start-time').value;
+            const endTime = document.getElementById('end-time').value;
+            const responseBox = document.getElementById('create-booking-response');
+
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        resource_id: resourceId,
+                        start_time: startTime,
+                        end_time: endTime
+                    })
+                });
+
+                const data = await response.json();
+                responseBox.classList.add('active');
+                responseBox.textContent = JSON.stringify(data, null, 2);
+
+                if (response.ok) {
+                    alert('✅ تم إنشاء الحجز بنجاح!');
+                }
+            } catch (error) {
+                responseBox.classList.add('active');
+                responseBox.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Set default datetime values
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(10, 0, 0, 0);
+        
+        const endTime = new Date(tomorrow);
+        endTime.setHours(12, 0, 0, 0);
+
+        document.getElementById('start-time').value = tomorrow.toISOString().slice(0, 16);
+        document.getElementById('end-time').value = endTime.toISOString().slice(0, 16);
+    </script>
+</body>
+</html>
