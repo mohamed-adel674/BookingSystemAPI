@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin',
         'role', // <--- (2) أضفنا حقل الدور (Role)
         'email_verified_at', // <--- (2) أضفنا email_verified_at
     ];

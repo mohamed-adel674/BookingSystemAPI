@@ -1,59 +1,237 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Booking System API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive Laravel-based booking system API with complete resource management, user authentication, and admin dashboard.
 
-## About Laravel
+## 🚀 Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **User Authentication** (Register, Login, Refresh Token, Logout)
+- **Profile Management** (View & Update Profile)
+- **Services Management** (CRUD with Search & Filtering)
+- **Resource Management** (Halls, Clinics, Services)
+- **Availability Management** (Time slots & Working hours)
+- **Booking System** (Create, Reschedule, Cancel, Confirm)
+- **Admin Dashboard** (Statistics, User Management, Booking Management)
+- **Email Notifications** (Booking Created, Booking Cancelled)
+- **Search & Filtering** (Services, Resources, Bookings)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📋 Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP >= 8.1
+- Composer
+- MySQL or SQLite
+- Laravel 11.x
 
-## Learning Laravel
+## 🛠️ Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```bash
+# Clone the repository
+git clone <repository-url>
+cd BookingSystemAPI-main
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Install dependencies
+composer install
 
-## Laravel Sponsors
+# Copy environment file
+cp .env.example .env
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Generate app key
+php artisan key:generate
 
-### Premium Partners
+# Configure database in .env file
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=booking_system
+DB_USERNAME=root
+DB_PASSWORD=
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Run migrations and seed
+php artisan migrate:fresh --seed
 
-## Contributing
+# Start the server
+php artisan serve
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🔑 Default Credentials
 
-## Code of Conduct
+- **Admin**: admin@example.com / password
+- **User**: ahmed@example.com / password
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 📚 API Endpoints
 
-## Security Vulnerabilities
+### Authentication
+```
+POST   /api/auth/register          Register new user
+POST   /api/auth/login             User login
+POST   /api/auth/refresh-token     Refresh access token
+POST   /api/auth/logout            User logout
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### User Profile
+```
+GET    /api/profile                Get user profile
+PUT    /api/profile                Update profile
+```
 
-## License
+### Services
+```
+GET    /api/services               List all services (with search)
+GET    /api/services/{id}          Get service details
+POST   /api/services               Create service (Admin)
+PUT    /api/services/{id}          Update service (Admin)
+DELETE /api/services/{id}          Delete service (Admin)
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Availability & Slots
+```
+GET    /api/availability           Search available time slots
+POST   /api/slots                  Create availability (Admin)
+PUT    /api/slots/{id}             Update availability (Admin)
+```
+
+### Bookings
+```
+POST   /api/bookings               Create new booking
+GET    /api/bookings               List user bookings
+GET    /api/bookings/{id}          Get booking details
+PUT    /api/bookings/{id}          Reschedule booking
+POST   /api/bookings/{id}/cancel   Cancel booking
+POST   /api/bookings/{id}/confirm  Confirm booking (Admin)
+GET    /api/users/{userId}/bookings Get user bookings
+```
+
+### Admin Dashboard
+```
+GET    /api/admin/statistics       Dashboard statistics
+GET    /api/admin/users            List all users
+GET    /api/admin/bookings         All bookings (with filters)
+PUT    /api/admin/users/{id}/role  Update user role
+```
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test file
+php artisan test tests/Feature/BookingApiTest.php
+
+# Run with coverage
+php artisan test --coverage
+```
+
+## 📧 Email Configuration
+
+Update your `.env` file:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your-username
+MAIL_PASSWORD=your-password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@booking.com
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+For development, use **Mailtrap** or **MailHog**.
+
+## 🔒 Security Features
+
+- **Sanctum Authentication**: Token-based authentication
+- **Admin Middleware**: Protected admin routes
+- **Conflict Detection**: Prevents double bookings
+- **Availability Validation**: Ensures bookings within working hours
+- **Authorization Checks**: User ownership verification
+- **Rate Limiting**: API protection against abuse
+
+## 📖 Database Schema
+
+### Users
+- id, name, email, password, is_admin, email_verified_at
+
+### Resources
+- id, name, description, type (hall/clinic/service), capacity, is_active
+
+### Availabilities
+- id, resource_id, day_of_week, start_time, end_time, date_from, date_to
+
+### Bookings
+- id, user_id, resource_id, start_time, end_time, status
+
+## 🎯 Usage Examples
+
+### Create Booking
+```bash
+curl -X POST http://localhost:8000/api/bookings \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "resource_id": 1,
+    "start_time": "2025-12-10 10:00:00",
+    "end_time": "2025-12-10 11:00:00"
+  }'
+```
+
+### Search Services
+```bash
+curl -X GET "http://localhost:8000/api/services?search=consultation&is_active=1"
+```
+
+### Get Available Slots
+```bash
+curl -X GET "http://localhost:8000/api/availability?resource_id=1&start_date=2025-12-10&end_date=2025-12-15&duration_minutes=60" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+## 📂 Project Structure
+
+```
+app/
+├── Http/
+│   ├── Controllers/Api/
+│   │   ├── AuthController.php
+│   │   ├── BookingController.php
+│   │   ├── ServiceController.php
+│   │   ├── AvailabilityController.php
+│   │   ├── ResourceController.php
+│   │   ├── AdminController.php
+│   │   └── UserController.php
+│   ├── Middleware/
+│   │   └── AdminMiddleware.php
+│   └── Resources/
+│       └── BookingResource.php
+├── Models/
+│   ├── User.php
+│   ├── Resource.php
+│   ├── Availability.php
+│   └── Booking.php
+├── Events/
+│   ├── BookingCreated.php
+│   └── BookingCancelled.php
+└── Listeners/
+    ├── SendBookingConfirmation.php
+    └── SendBookingCancellation.php
+```
+
+## 🤝 Contributing
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is open-sourced software licensed under the MIT license.
+
+## 👨‍💻 Author
+
+Booking System API - Laravel Backend
+
+## 📞 Support
+
+For support, email support@booking.com or create an issue in the repository.

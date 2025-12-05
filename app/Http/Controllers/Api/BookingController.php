@@ -181,7 +181,7 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         // استخدام guard() للتحقق من أن المستخدم مسجل الدخول، واستخدام id() لاسترجاع المعرف.
-        $userId = auth()->guard('api')->id() ?? auth()->id(); // استخدام أكثر أمانًا إذا كنت تستخدم API guards
+        $userId = auth()->id(); // تم التبسيط لاستخدام الحارس الافتراضي (عادة sanctum في API)
 
         // 1. Validation
         $request->validate([
@@ -237,6 +237,127 @@ class BookingController extends Controller
                 'error_detail' => $e->getMessage() // للتصحيح فقط، يفضل إزالته في الإنتاج
             ], 500);
         }
+    }
+
+    /**
+     * إلغاء حجز (POST /api/bookings/{booking}/cancel).
+     */
+    public function cancel(Booking $booking)
+    {
+        // التحقق من الصلاحيات
+        if (auth()->id() !== $booking->user_id) {
+            return response()->json(['message' => 'Unauthorized access.'], 403);
+        }
+
+        // منع الإلغاء إذا كان الموعد قد بدأ
+        if (Carbon::parse($booking->start_time)->isPast()) {
+            return response()->json(['message' => 'Cannot cancel a booking that has already started.'], 400);
+        }
+
+        $oldStatus = $booking->status;
+        $booking->update(['status' => 'cancelled']);
+
+        // إطلاق حدث الإلغاء
+        if ($oldStatus !== 'cancelled') {
+            event(new BookingCancelled($booking));
+        }
+
+        return new BookingResource($booking->load('resource'));
+    }
+
+    /**
+     * تأكيد حجز (POST /api/bookings/{booking}/confirm) - للمشرف فقط.
+     */
+    public function confirm(Booking $booking)
+    {
+        // التحقق من أن المستخدم هو مشرف
+        if (!auth()->user()->is_admin) {
+            return response()->json(['message' => 'Forbidden: Admin access required.'], 403);
+        }
+
+        $booking->update(['status' => 'confirmed']);
+
+        return response()->json([
+            'message' => 'Booking confirmed successfully',
+            'booking' => new BookingResource($booking->load('resource'))
+        ]);
+    }
+
+    /**
+     * إعادة جدولة حجز (PUT /api/bookings/{booking}) - تغيير الوقت.
+     */
+    public function reschedule(Request $request, Booking $booking)
+    {
+        // التحقق من الصلاحيات
+        if (auth()->id() !== $booking->user_id) {
+            return response()->json(['message' => 'Unauthorized access.'], 403);
+        }
+
+        // منع التعديل إذا كان الموعد قد بدأ
+        if (Carbon::parse($booking->start_time)->isPast()) {
+            return response()->json(['message' => 'Cannot reschedule a booking that has already started.'], 400);
+        }
+
+        // Validation
+        $request->validate([
+            'start_time' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
+            'end_time' => 'required|date_format:Y-m-d H:i:s|after:start_time',
+        ]);
+
+        $startTime = Carbon::parse($request->start_time);
+        $endTime = Carbon::parse($request->end_time);
+
+        // التحقق من التوافر والتضارب (لنفس المنطق في store)
+        if (!$this->isWithinAvailability($booking->resource_id, $startTime, $endTime)) {
+            return response()->json([
+                'message' => 'The requested time slot is outside the resource\'s defined availability schedule.'
+            ], 409);
+        }
+
+        // التحقق من عدم التداخل مع حجوزات أخرى (باستثناء الحجز الحالي)
+        $hasOverlap = Booking::where('resource_id', $booking->resource_id)
+            ->where('id', '!=', $booking->id) // استبعاد الحجز الحالي
+            ->where(function ($query) use ($startTime, $endTime) {
+                $query->where('start_time', '<', $endTime)
+                    ->where('end_time', '>', $startTime);
+            })
+            ->whereIn('status', ['confirmed', 'pending'])
+            ->exists();
+
+        if ($hasOverlap) {
+            return response()->json([
+                'message' => 'The requested time slot overlaps with an existing booking.'
+            ], 409);
+        }
+
+        // تحديث الحجز
+        $booking->update([
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+        ]);
+
+        return response()->json([
+            'message' => 'Booking rescheduled successfully',
+            'booking' => new BookingResource($booking->load('resource'))
+        ]);
+    }
+
+    /**
+     * عرض حجوزات مستخدم معين (GET /api/users/{userId}/bookings).
+     */
+    public function userBookings($userId)
+    {
+        // يمكن للمستخدم رؤية حجوزاته فقط، أو للمشرف رؤية حجوزات أي مستخدم
+        if (auth()->id() != $userId && !auth()->user()->is_admin) {
+            return response()->json(['message' => 'Unauthorized access.'], 403);
+        }
+
+        $bookings = Booking::where('user_id', $userId)
+            ->with('resource:id,name')
+            ->latest()
+            ->paginate(10);
+
+        return BookingResource::collection($bookings);
     }
 
     /**

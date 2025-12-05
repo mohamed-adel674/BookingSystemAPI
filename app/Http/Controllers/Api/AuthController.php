@@ -74,6 +74,25 @@ class AuthController extends Controller
     }
 
     /**
+     * تحديث الرمز (Refresh Token).
+     */
+    public function refreshToken(Request $request)
+    {
+        $user = $request->user();
+        
+        // إلغاء التوكن الحالي
+        $request->user()->currentAccessToken()->delete();
+        
+        // إنشاء توكن جديد
+        $token = $user->createToken('authToken')->plainTextToken;
+        
+        return response()->json([
+            'message' => 'Token refreshed successfully',
+            'token' => $token,
+        ]);
+    }
+
+    /**
      * تسجيل الخروج وإلغاء صلاحية Token (Logout).
      */
     public function logout(Request $request)

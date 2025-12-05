@@ -21,9 +21,9 @@ class AdminMiddleware
             return response()->json(['message' => 'Unauthorized: User not logged in.'], 401);
         }
 
-        // 2. التحقق مما إذا كان دور المستخدم موجوداً ضمن الأدوار الممررة
-        if (! in_array($request->user()->role, $roles)) {
-            // خطأ 403 Forbidden إذا لم يكن الدور مسموحاً
+        // 2. التحقق مما إذا كان المستخدم مشرفاً (is_admin)
+        if (! $request->user()->is_admin) {
+            // خطأ 403 Forbidden إذا لم يكن المستخدم مشرفاً
             return response()->json([
                 'message' => 'Forbidden: You do not have the required permissions.'
             ], 403); 
